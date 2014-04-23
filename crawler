@@ -1,0 +1,123 @@
+#!/usr/bin/env python
+
+import re
+import socket
+import sys
+import urllib2
+
+from urlparse import urlparse
+
+socket.setdefaulttimeout(10)
+
+domain = "spring.io"
+excluded_domains = ["jira.spring.io", "forum.spring.io", "repo.spring.io"]
+
+levels = 0
+level_limit = -1
+
+def strip(link):
+  if link.endswith("/"):
+    return link[:-1]
+  else:
+    return link
+
+def convert(link):
+      
+  if link.startswith("http"):
+    return strip(link)
+    
+  if link.startswith("//"):
+    return "http:%s" % link
+    
+  if link.startswith("/"):
+    l = strip("http://%s%s" % (domain, link))
+    #print "Returning %s" % l
+    return l
+    
+  return strip("http://%s" % link)
+
+def scan_for_links(url, links, dead_links, paths):
+  global levels
+  levels += 1
+  if level_limit > 0 and levels > level_limit:
+    #print "You have exceeded the limit of %s. Dropping back" % level_limit    
+    return
+    
+  print "Crawling %s" % url
+  
+  try:
+    page = urllib2.urlopen(url)
+  except urllib2.HTTPError as e:
+    raise e
+  except urllib2.URLError as e:
+    print "Broke while scanning %s" % url
+    print e
+      
+  html = page.read()
+  
+  local_links = []
+
+  m = re.findall(r'href="([\w:/\.-]+)"', html)
+  #print "Found %s links" % len(m)
+  
+  for link in m:
+    converted_link = convert(link)
+    if converted_link not in links:
+      links.append(converted_link)
+      local_links.append(converted_link)
+    else:
+      #print "%s is already in it!" % converted_link
+      pass
+      
+  for link in local_links:
+    #print "Newly found! %s" % link
+    pass
+    
+  if len(local_links) > 0:
+    for link in local_links:
+      if domain in link:
+        hostname = urlparse(link).netloc
+        if hostname in excluded_domains:
+          continue
+        try:
+          scan_for_links(link, links, dead_links, paths)
+          if link in paths:
+            paths[link].append(url)
+          else:
+            paths[link] = [url]
+        except urllib2.HTTPError as e:
+          print "Can't find link on %s" % link
+          print e
+          if e.code == 404:
+            dead_links.append((url, link))
+            levels -= 1
+            return
+      else:
+        #print "%s leaves this domain, so not crawling" % link
+        pass
+  else:
+    #print "No new links to crawl"
+    pass
+    
+  levels -= 1  
+    
+if __name__ == "__main__":
+  links = []
+  dead_links = []
+  paths = {}
+  scan_for_links("http://spring.io", links, dead_links, paths)
+  print "============ GOOD ======================"
+  links.sort()
+  for link in links:
+    print link
+  print "============ BAD ======================"
+  for link in dead_links:
+    print link
+  #print "============ PATHS ======================"
+  #keys = paths.keys()
+  #keys.sort()
+  #for link in keys:
+  #  print link
+  #  for url in paths[link]:
+  #    print "\t\t\t\t\t\t\t%s" % url
+    
