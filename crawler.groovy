@@ -4,12 +4,15 @@ package com.greglturnquist
 class Crawler implements CommandLineRunner {
 
     @Value('${domain:spring.io}')
-    def domain
+    String domain
     
-    def excluded_domains = ['jira.spring.io','forum.spring.io','repo.spring.io']
+    @Value('${exclude:jira.spring.io,forum.spring.io,repo.spring.io}')
+    String[] excluded_domains
 
     def levels = 0
-    def level_limit = 1
+    
+    @Value('${depth:-1}')
+    int level_limit
 
     def strip(link) {
         if (link.endsWith("/")) {
@@ -111,12 +114,13 @@ class Crawler implements CommandLineRunner {
         def links = []
         def dead_links = []
         def paths = [:]
-        def base
-        if (args.length > 0) {
-            base = args[0]
-        } else {
-            base = "http://spring.io"
-        }
+
+        log.info("About to scan ${domain}...")
+        log.info("...unless it goes into ${excluded_domains}")
+        log.info("Will only go ${level_limit==-1?'infinite':level_limit} level${level_limit==1?'':'s'} deep")
+        
+        def base = "http://${domain}"
+        log.info("Domain is ${domain}")
         scan_for_links(base, links, dead_links, paths)
         log.info "============ GOOD ======================"
         links.sort()
