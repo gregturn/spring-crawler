@@ -1,7 +1,143 @@
+:toc:
+
 Spring Crawler is a small app that crawls your website without getting out of control.
 
-You provide it with a starting point, a domain to stay within, and exceptions of other sites to not travel.
+----
+% spring run crawler.groovy
+----
 
-Provides a nice report when done.
+The output will look something like this:
 
-This app uses Spring Boot's CLI.
+----
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.0.2.RELEASE)
+
+2014-04-25 13:32:43.863  INFO 31111 --- [       runner-0] o.s.boot.SpringApplication               : Starting application on retina with PID 31111 (/Users/gturnquist/.m2/repository/org/springframework/boot/spring-boot/1.0.2.RELEASE/spring-boot-1.0.2.RELEASE.jar started by gturnquist in /Users/gturnquist/src/spring-crawler)
+2014-04-25 13:32:43.912  INFO 31111 --- [       runner-0] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@5db00667: startup date [Fri Apr 25 13:32:43 CDT 2014]; root of context hierarchy
+2014-04-25 13:32:44.547  INFO 31111 --- [       runner-0] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2014-04-25 13:32:44.598  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : About to scan spring.io...
+2014-04-25 13:32:44.598  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : ...unless it goes into [jira.spring.io, forum.spring.io, repo.spring.io]
+2014-04-25 13:32:44.600  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Will only go infinite levels deep
+2014-04-25 13:32:44.600  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Domain is spring.io
+2014-04-25 13:32:44.625  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io
+2014-04-25 13:32:44.862  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io/img/favicon.png
+2014-04-25 13:32:44.932  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io/css/main.css
+...
+----
+
+There are several command overrides.
+
+== Command line options
+
+Spring Boot CLI apps can be configured with options. Custom options must be separated from `spring` option by a double dash (`--`). After that, each option must look like this:
+
+----
+spring run app.groovy -- --parm1=val1 --parm2=val2
+----
+
+This will cause @Value annotations to be injected when the app starts up.
+
+[source,java]
+----
+@Value('${parm1:spring.io}')
+String domain
+----
+
+This code fragment shows a class level attribute `domain` being injected by `parm1`. In this case, a default value was supplied.
+
+NOTE: If you are supplying an array, you need to specify the type. In Groovy, you can get by using `def`, but if you specify the type, it helps parse the incoming text.
+
+[source,java]
+----
+@Value('${exclude:jira.spring.io,forum.spring.io,repo.spring.io}')
+String[] excluded_domains
+----
+
+This fragment will actually turn a command-separate (but no spaces) string into a string array.
+
+== Spring Crawler options
+
+To change the domain it will scan, you can supply a command line override.
+
+----
+% spring run crawler.groovy -- --domain=google.com
+----
+
+It will start at that URL and not travel to any links outside that domain. It has a default set of subdomains it will NOT go to, but you can override that too.
+
+----
+% spring run crawler.groovy -- --exclude=jira.spring.io,repo.spring.io
+----
+
+The output below shows the configuration:
+
+----
+...
+2014-04-25 13:39:59.872  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : About to scan spring.io...
+2014-04-25 13:39:59.872  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : ...unless it goes into [jira.spring.io, repo.spring.io]
+2014-04-25 13:39:59.875  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : Will only go infinite levels deep
+2014-04-25 13:39:59.876  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : Domain is spring.io
+2014-04-25 13:39:59.905  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io
+...
+----
+
+Finally, to test things out, you can restrict the depth it will search.
+
+----
+% spring run crawler.groovy -- --depth=1
+----
+
+This will only navigate down one level. Any links below that will not be visited.
+
+----
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::        (v1.0.2.RELEASE)
+
+2014-04-25 13:41:56.759  INFO 31206 --- [       runner-0] o.s.boot.SpringApplication               : Starting application on retina with PID 31206 (/Users/gturnquist/.m2/repository/org/springframework/boot/spring-boot/1.0.2.RELEASE/spring-boot-1.0.2.RELEASE.jar started by gturnquist in /Users/gturnquist/src/spring-crawler)
+2014-04-25 13:41:56.803  INFO 31206 --- [       runner-0] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@c18e18d: startup date [Fri Apr 25 13:41:56 CDT 2014]; root of context hierarchy
+2014-04-25 13:41:57.435  INFO 31206 --- [       runner-0] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
+2014-04-25 13:41:57.486  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : About to scan spring.io...
+2014-04-25 13:41:57.487  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : ...unless it goes into [jira.spring.io, forum.spring.io, repo.spring.io]
+2014-04-25 13:41:57.493  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : Will only go 1 level deep
+2014-04-25 13:41:57.493  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : Domain is spring.io
+2014-04-25 13:41:57.511  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io
+2014-04-25 13:41:57.838  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.852  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.868  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.869  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.869  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.869  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.870  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.870  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.870  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.870  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.871  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.871  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : You have exceeded the limit of 1. Dropping back
+2014-04-25 13:41:57.875  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : ============ GOOD ======================
+2014-04-25 13:41:57.879  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/blog
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/css/main.css
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/docs
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/guides
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/img/favicon.png
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/platform
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/projects
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/services
+2014-04-25 13:41:57.880  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/team
+2014-04-25 13:41:57.881  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/tools
+2014-04-25 13:41:57.881  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : http://spring.io/tools/sts
+2014-04-25 13:41:57.881  INFO 31206 --- [       runner-0] com.greglturnquist.Crawler               : ============ BAD ======================
+2014-04-25 13:41:57.882  INFO 31206 --- [       runner-0] o.s.boot.SpringApplication               : Started application in 1.402 seconds (JVM running for 3.522)
+2014-04-25 13:41:57.882  INFO 31206 --- [       Thread-2] s.c.a.AnnotationConfigApplicationContext : Closing org.springframework.context.annotation.AnnotationConfigApplicationContext@c18e18d: startup date [Fri Apr 25 13:41:56 CDT 2014]; root of context hierarchy
+2014-04-25 13:41:57.883  INFO 31206 --- [       Thread-2] o.s.j.e.a.AnnotationMBeanExporter        : Unregistering JMX-exposed beans on shutdown
+----
