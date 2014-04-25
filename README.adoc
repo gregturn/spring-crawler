@@ -1,0 +1,7 @@
+Spring Crawler is a small app that crawls your website without getting out of control.
+
+You provide it with a starting point, a domain to stay within, and exceptions of other sites to not travel.
+
+Provides a nice report when done.
+
+This app uses Spring Boot's CLI.
