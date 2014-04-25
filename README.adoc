@@ -17,18 +17,20 @@ The output will look something like this:
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v1.0.2.RELEASE)
 
-2014-04-25 13:32:43.863  INFO 31111 --- [       runner-0] o.s.boot.SpringApplication               : Starting application on retina with PID 31111 (/Users/gturnquist/.m2/repository/org/springframework/boot/spring-boot/1.0.2.RELEASE/spring-boot-1.0.2.RELEASE.jar started by gturnquist in /Users/gturnquist/src/spring-crawler)
-2014-04-25 13:32:43.912  INFO 31111 --- [       runner-0] s.c.a.AnnotationConfigApplicationContext : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@5db00667: startup date [Fri Apr 25 13:32:43 CDT 2014]; root of context hierarchy
-2014-04-25 13:32:44.547  INFO 31111 --- [       runner-0] o.s.j.e.a.AnnotationMBeanExporter        : Registering beans for JMX exposure on startup
-2014-04-25 13:32:44.598  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : About to scan spring.io...
-2014-04-25 13:32:44.598  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : ...unless it goes into [jira.spring.io, forum.spring.io, repo.spring.io]
-2014-04-25 13:32:44.600  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Will only go infinite levels deep
-2014-04-25 13:32:44.600  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Domain is spring.io
-2014-04-25 13:32:44.625  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io
-2014-04-25 13:32:44.862  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io/img/favicon.png
-2014-04-25 13:32:44.932  INFO 31111 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io/css/main.css
+2014-04-25 13:32:43.863  INFO 31111 --- : Starting application on retina with PID 31111 (/Users/gturnquist/.m2/repository/org/springframework/boot/spring-boot/1.0.2.RELEASE/spring-boot-1.0.2.RELEASE.jar started by gturnquist in /Users/gturnquist/src/spring-crawler)
+2014-04-25 13:32:43.912  INFO 31111 --- : Refreshing org.springframework.context.annotation.AnnotationConfigApplicationContext@5db00667: startup date [Fri Apr 25 13:32:43 CDT 2014]; root of context hierarchy
+2014-04-25 13:32:44.547  INFO 31111 --- : Registering beans for JMX exposure on startup
+2014-04-25 13:32:44.598  INFO 31111 --- : About to scan spring.io...
+2014-04-25 13:32:44.598  INFO 31111 --- : ...unless it goes into [jira.spring.io, forum.spring.io, repo.spring.io]
+2014-04-25 13:32:44.600  INFO 31111 --- : Will only go infinite levels deep
+2014-04-25 13:32:44.600  INFO 31111 --- : Domain is spring.io
+2014-04-25 13:32:44.625  INFO 31111 --- : Crawling http://spring.io
+2014-04-25 13:32:44.862  INFO 31111 --- : Crawling http://spring.io/img/favicon.png
+2014-04-25 13:32:44.932  INFO 31111 --- : Crawling http://spring.io/css/main.css
 ...
 ----
+
+NOTE: Bits of the console output have been removed for improved readability.
 
 There are several command overrides.
 
@@ -78,11 +80,11 @@ The output below shows the configuration:
 
 ----
 ...
-2014-04-25 13:39:59.872  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : About to scan spring.io...
-2014-04-25 13:39:59.872  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : ...unless it goes into [jira.spring.io, repo.spring.io]
-2014-04-25 13:39:59.875  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : Will only go infinite levels deep
-2014-04-25 13:39:59.876  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : Domain is spring.io
-2014-04-25 13:39:59.905  INFO 31198 --- [       runner-0] com.greglturnquist.Crawler               : Crawling http://spring.io
+2014-04-25 13:39:59.872  INFO 31198 --- : About to scan spring.io...
+2014-04-25 13:39:59.872  INFO 31198 --- : ...unless it goes into [jira.spring.io, repo.spring.io]
+2014-04-25 13:39:59.875  INFO 31198 --- : Will only go infinite levels deep
+2014-04-25 13:39:59.876  INFO 31198 --- : Domain is spring.io
+2014-04-25 13:39:59.905  INFO 31198 --- : Crawling http://spring.io
 ...
 ----
 
