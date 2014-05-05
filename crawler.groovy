@@ -1,6 +1,8 @@
 package com.greglturnquist
 
+@Grab("thymeleaf-spring4")
 @Log
+@Controller
 class Crawler implements CommandLineRunner {
 
     @Value('${domain:spring.io}')
@@ -9,10 +11,12 @@ class Crawler implements CommandLineRunner {
     @Value('${exclude:jira.spring.io,forum.spring.io,repo.spring.io}')
     String[] excluded_domains
 
-    def levels = 0
-    
     @Value('${depth:-1}')
     int level_limit
+    
+    def links = []
+    def dead_links = []
+    def paths = [:]
 
     def strip(link) {
         if (link.endsWith("/")) {
@@ -40,7 +44,7 @@ class Crawler implements CommandLineRunner {
         return strip("http://${link}")
     }
 
-    def scan_for_links(url, links, dead_links, paths) {
+    def scan_for_links(url, links, dead_links, paths, levels) {
         levels += 1
         if (level_limit > 0 && levels > level_limit) {
             log.info "You have exceeded the limit of ${level_limit}. Dropping back"
@@ -83,7 +87,7 @@ class Crawler implements CommandLineRunner {
                         //log.info "${hostname} is NOT excluded, so going deeper"
                     }
                     try {
-                        scan_for_links(link, links, dead_links, paths)
+                        scan_for_links(link, links, dead_links, paths, levels)
                         if (paths.containsKey(link)) {
                             paths[link] << url
                         } else {
@@ -110,18 +114,16 @@ class Crawler implements CommandLineRunner {
         levels -= 1  
     }
     
-    void run(String[] args) {   
-        def links = []
-        def dead_links = []
-        def paths = [:]
-
+    void run(String[] args) { 
+        def levels = 0
+      
         log.info("About to scan ${domain}...")
         log.info("...unless it goes into ${excluded_domains}")
         log.info("Will only go ${level_limit==-1?'infinite':level_limit} level${level_limit==1?'':'s'} deep")
         
         def base = "http://${domain}"
         log.info("Domain is ${domain}")
-        scan_for_links(base, links, dead_links, paths)
+        scan_for_links(base, links, dead_links, paths, levels)
         log.info "============ GOOD ======================"
         links.sort()
         for (link in links) {
@@ -139,4 +141,24 @@ class Crawler implements CommandLineRunner {
         //  for url in paths[link]:
         //    log.info "\t\t\t\t\t\t\t%s" % url
     }
+    
+    @RequestMapping("/")
+    String index(Map<String, Object> model) {
+        model.put("domain", "http://${domain}")
+        model.put("links", links)
+        "good"
+    }
+
+    @RequestMapping("/bad")
+    String bad(Map<String, Object> model) {
+        model.put("domain", "http://${domain}")
+        model.put("dead_links", dead_links)
+        "bad"
+    }
+    
+    @RequestMapping(value="/update", method=RequestMethod.POST)
+    void update() {
+        run()
+    }
+    
 }

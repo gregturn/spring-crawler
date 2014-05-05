@@ -1,0 +1,68 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Spring Crawler</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <meta content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1, user-scalable=no" id="Viewport" name="viewport"/>
+	    <link href="https://fonts.googleapis.com/css?family=Varela+Round|Montserrat:400,700" rel="stylesheet" type="text/css"/>
+        <link rel="stylesheet" type="text/css" href="http://spring.io/css/main.css"/>
+        <link rel="stylesheet" type="text/css" href="http://spring.io/css/blog.css"/>
+    </head>
+    <body>
+		<script type="text/javascript">
+		    // Work around Google font rendering issues in webkit browsers on Windows 7
+		    if (navigator.userAgent.indexOf("NT 6.1") != -1) {
+		      document.body.style.WebkitTextStroke = "0.5px";
+		    }
+		  </script>
+		<div class="viewport">
+			<header class="navbar header--navbar desktop-only">
+				<div class="navbar-inner">
+					<div class="container-fluid">
+						<div class="spring-logo--container">
+							<a class="spring-logo" href="/"><span></span></a>
+						</div>
+						<ul class="nav pull-right">
+							<li class="navbar-link">
+								<a href="/">Good Links</a>
+							</li>
+							<li class="navbar-link">
+								<a href="https://github.com/gregturn/spring-crawler">GitHub</a>
+							</li>
+							<li class="navbar-link">
+								<a th:href="${domain}">Site</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</header>
+			<div class="header--container"></div>
+			<div class="container-fluid"></div>
+			<div></div>
+			<div class="body--container container-fluid">
+				<div class="blog--container">
+					<article class="blog--post">
+        			    <h4>Crawling Results</h4>
+					    
+				        <table>
+							<thead>
+				            <tr>
+				                <th>Bad Links</th>
+				            </tr>
+							</thead>
+							
+							<tbody>
+				            <tr th:each="link : ${dead_links}">
+				                <td>
+				                    <a href="#" th:text="${link[0]}" th:href="${link[0]}"></a>
+				                    links to <a th:text="${link[1]}" th:href="${link[1]}"></a></td>
+				            </tr>
+							</tbody>
+				        </table>
+				        
+					</article>
+				</div>
+			</div>
+		</div>
+    </body>
+</html>
